@@ -345,12 +345,25 @@ pm.test("Validate update information with previous payload", function(){
 
 ```
 #### Successful - Delete Trigger (200)
-> A useful tool to compare the differences is [tool](https://www.jsondiff.com/)
 - Url: {{baseURL}}/3.0/triggers/{{id}}
 - Method: DELETE
-- Expected Response:
+- Expected Response: Delete the trigger, but for the moment not is working 
 ```sh
+<html>
 
+<head>
+    <title>504 Gateway Time-out</title>
+</head>
+
+<body>
+    <center>
+        <h1>504 Gateway Time-out</h1>
+    </center>
+    <hr>
+    <center>openresty</center>
+</body>
+
+</html>
 ```
 - TESTS - Successful - Delete Trigger (200)
 ```sh
