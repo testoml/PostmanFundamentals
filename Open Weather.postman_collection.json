@@ -1,0 +1,515 @@
+{
+	"info": {
+		"_postman_id": "fe78b3fb-9bda-467b-8b84-bb421e0677d2",
+		"name": "Open Weather",
+		"schema": "https://schema.getpostman.com/json/collection/v2.1.0/collection.json",
+		"_exporter_id": "4602723"
+	},
+	"item": [
+		{
+			"name": "Create a trigger - Unauthorized",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"pm.test(\"Status code is 401\", function () {\r",
+							"    pm.response.to.have.status(401);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate Message\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Invalid API key. Please see https://openweathermap.org/faq#error401 for more info.\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/triggers",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a trigger - Not Found",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Test\r",
+							"pm.test(\"Status code is 404\", function () {\r",
+							"    pm.response.to.have.status(404);\r",
+							"});\r",
+							"pm.test(\"Your test name\", function () {\r",
+							"    var jsonData = pm.response.json();\r",
+							"    pm.expect(jsonData.message).to.eql(\"Internal error\");\r",
+							"});"
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/3.0/trigger",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"trigger"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Create a trigger - Bad Request",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Test\r",
+							"pm.test(\"Status code is 400\", function () {\r",
+							"    pm.response.to.have.status(400);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Body matches string\", function () {\r",
+							"    pm.expect(pm.response.text()).to.include('Time_period start should to have \"expression\" param.');\r",
+							"});\r",
+							"\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{\r\n   \"time_period\":{\r\n      \"start\":{\r\n         \"expression\":\"\",\r\n         \"amount\":0\r\n      },\r\n      \"end\":{\r\n         \"expression\":\"\",\r\n         \"amount\":0\r\n      }\r\n   }\r\n}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successful - Create a trigger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Variables\r",
+							"const response = pm.response.json();\r",
+							"const id = response[\"_id\"];\r",
+							"//Test\r",
+							"pm.test(\"Status code is 201\", function () {\r",
+							"    pm.response.to.have.status(201);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate create payload with response\", function () {\r",
+							"    const payload = JSON.parse(pm.environment.get('createPayload'));  \r",
+							"    for(i=0; i<payload.area.length; i++){\r",
+							"        let difference = payload.area[i].coordinates.filter(x => !response.area[i].coordinates.includes(x));\r",
+							"        pm.expect(difference.length).to.be.eql(0);\r",
+							"    };\r",
+							"    let differenceConditions = payload.conditions.filter(x => !response.conditions.includes(x));\r",
+							"    pm.expect(differenceConditions.length).to.be.eql(1); //it's 1 because _id is a new field added\r",
+							"    pm.expect(payload.time_period).to.have.jsonSchema(response.time_period); //Validate the same Json Schema\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate exists an id\", function () {\r",
+							"    pm.expect(id).to.not.eq(0);\r",
+							"});\r",
+							"\r",
+							"//Save Payload\r",
+							"pm.environment.set('id', id);\r",
+							"pm.environment.set('responseCreatePayload', JSON.stringify(response))\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "POST",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"body": {
+					"mode": "raw",
+					"raw": "{{createPayload}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successful - Get all triggers",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successful - Update Trigger",
+			"event": [
+				{
+					"listen": "test",
+					"script": {
+						"exec": [
+							"//Current response\r",
+							"const response = pm.response.json();\r",
+							"\r",
+							"//Test\r",
+							"pm.test(\"Status code is 200\", function () {\r",
+							"    pm.response.to.have.status(200);\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate update payload with response\", function () {\r",
+							"    const payload = JSON.parse(pm.environment.get('updatePayload'));  \r",
+							"    for(i=0; i<payload.area.length; i++){\r",
+							"        let difference = payload.area[i].coordinates.filter(x => !response.area[i].coordinates.includes(x));\r",
+							"        pm.expect(difference.length).to.be.eql(0);\r",
+							"    };\r",
+							"    let differenceConditions = payload.conditions.filter(x => !response.conditions.includes(x));\r",
+							"    pm.expect(differenceConditions.length).to.be.eql(1); //it's 1 because _id is a new field added\r",
+							"    pm.expect(payload.time_period).to.have.jsonSchema(response.time_period); //Validate the same Json Schema\r",
+							"});\r",
+							"\r",
+							"pm.test(\"Validate update information with previous payload\", function(){\r",
+							"    const responseCreatePayload = JSON.parse(pm.environment.get('responseCreatePayload'));\r",
+							"     pm.expect(responseCreatePayload).to.have.jsonSchema(response); //Validate the same Json Schema\r",
+							"     pm.expect(response.__v).to.not.eq(responseCreatePayload.__v);\r",
+							"     pm.expect(response.area[0]._id).to.not.be.eq(responseCreatePayload.area[0]._id, \"Are id should be different\");\r",
+							"     pm.expect(response.conditions[0]._id).to.not.be.eq(responseCreatePayload.conditions[0]._id, \"Condition id in 0 position should be different\");\r",
+							"     pm.expect(response.conditions[0].amount).to.not.be.eq(responseCreatePayload.conditions[0].amount, \"Condition amount should be different\");\r",
+							"     pm.expect(response.conditions[0].amount).to.below(responseCreatePayload.conditions[0].amount, \"Condition amount after update should be bellow\");\r",
+							"     pm.expect(response.conditions[0].expression).to.not.be.eq(responseCreatePayload.conditions[0].expression, \"Condition expression after update shoul be bellow than create payload\");\r",
+							"     pm.expect(response.time_period.end.amount).to.below(responseCreatePayload.time_period.end.amount, \"Time period amount after update should be bellow than create payload\");\r",
+							"});\r",
+							"\r",
+							""
+						],
+						"type": "text/javascript",
+						"packages": {}
+					}
+				}
+			],
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "PUT",
+				"header": [],
+				"body": {
+					"mode": "raw",
+					"raw": "{{updatePayload}}",
+					"options": {
+						"raw": {
+							"language": "json"
+						}
+					}
+				},
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers/{{id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successful - Delete Trigger",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						},
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						}
+					]
+				},
+				"method": "DELETE",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers/{{id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		},
+		{
+			"name": "Successful - Get all triggers Copy",
+			"request": {
+				"auth": {
+					"type": "apikey",
+					"apikey": [
+						{
+							"key": "value",
+							"value": "{{value}}",
+							"type": "string"
+						},
+						{
+							"key": "key",
+							"value": "{{key}}",
+							"type": "string"
+						},
+						{
+							"key": "in",
+							"value": "query",
+							"type": "string"
+						}
+					]
+				},
+				"method": "GET",
+				"header": [
+					{
+						"key": "Content-Type",
+						"value": "application/json",
+						"type": "text"
+					}
+				],
+				"url": {
+					"raw": "{{baseURL}}/3.0/triggers/{{id}}",
+					"host": [
+						"{{baseURL}}"
+					],
+					"path": [
+						"3.0",
+						"triggers",
+						"{{id}}"
+					]
+				}
+			},
+			"response": []
+		}
+	]
+}
